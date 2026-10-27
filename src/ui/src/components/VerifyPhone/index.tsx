@@ -154,7 +154,7 @@ export const VerifyPhone = (props: any) => {
           <TextInput
             key={idx}
             keyboardType='number-pad'
-            ref={r => inputRefs[idx] =  r}
+            ref={r => { inputRefs[idx] = r }}
             maxLength={1}
             style={styles.inputStyle}
             placeholder={'0'}

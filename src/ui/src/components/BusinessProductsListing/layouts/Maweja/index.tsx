@@ -34,6 +34,7 @@ import { convertHoursToMinutes } from '../../../../utils'
 import { PressableScale } from '../../../shared/PressableScale'
 import { themeBrandColor } from '@/utils/themeBrandColor'
 import { openFromCheckout } from '@/utils/checkoutReturn'
+import { truncateDescription } from './truncateDescription'
 import { useKeyboardInset } from '../../../../hooks/useKeyboardInset'
 import { UpsellingRedirect } from '../../UpsellingRedirect'
 import {
@@ -468,7 +469,9 @@ export const MawejaBusinessMenu = (props: BusinessProductsListingParams) => {
                 </View>
               </Placeholder>
             )}
-            {visibleProducts.map((product) => (
+            {visibleProducts.map((product) => {
+              const productDescription = truncateDescription(product?.description)
+              return (
               <PressableScale
                 key={String(product.id)}
                 testID={`maweja-product-${product.id}`}
@@ -482,6 +485,16 @@ export const MawejaBusinessMenu = (props: BusinessProductsListingParams) => {
                   )}
                   <ProductCopy>
                     <OText size={14} weight="bold" numberOfLines={2}>{product.name}</OText>
+                    {productDescription ? (
+                      <OText
+                        testID={`maweja-product-description-${product.id}`}
+                        size={12}
+                        color={theme.colors.textSecondary}
+                        mTop={2}
+                      >
+                        {productDescription}
+                      </OText>
+                    ) : null}
                     <OText size={14} weight="bold" color={brand} mTop={4}>{parsePrice(product.price)}</OText>
                   </ProductCopy>
                   <PressableScale testID={`maweja-add-${product.id}`} onPress={() => onProductClick(product)}>
@@ -491,7 +504,8 @@ export const MawejaBusinessMenu = (props: BusinessProductsListingParams) => {
                   </PressableScale>
                 </ProductCard>
               </PressableScale>
-            ))}
+              )
+            })}
             {!categoryState?.loading && visibleProducts.length === 0 && (
               <Section>
                 <OText size={14} color={theme.colors.textSecondary}>{t('NO_PRODUCTS', 'No products')}</OText>

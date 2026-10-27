@@ -2896,6 +2896,35 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNSentry (8.30.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNSVG (15.15.0):
     - boost
     - DoubleConversion
@@ -3237,6 +3266,7 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - "segment-analytics-react-native (from `../node_modules/@segment/analytics-react-native`)"
@@ -3510,6 +3540,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-haptic-feedback"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -3665,6 +3697,7 @@ SPEC CHECKSUMS:
   RNPermissions: b52f1ceade888a3c44e3d541380c35ed7a2f3c96
   RNReactNativeHapticFeedback: 8364333ca888b1b7ec9d2daf04b010ee5436366e
   RNScreens: 67ef075c463869c82f26744eee5f927edeea3190
+  RNSentry: 15cbc4547042d80899c93f6f65ab2064fb06b3a5
   RNSVG: cf603fc57ab18c03f523483e7f18db3472c599e1
   RNVectorIcons: 791f13226ec4a3fd13062eda9e892159f0981fae
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d

@@ -1,6 +1,6 @@
 import React from 'react'
-import { fireEvent } from '@testing-library/react-native'
-import { BackHandler } from 'react-native'
+import { act, fireEvent } from '@testing-library/react-native'
+import { BackHandler, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
 
 import { useBusiness, useSession } from '@components'
 import { renderPage } from '../../../jest/helpers/renderPage'
@@ -78,6 +78,55 @@ let backHandlerCallback: (() => boolean) | null = null
   })
 
 describe('MessageView', () => {
+  it.each(['ios', 'android'])('keeps the whole chat above the keyboard on %s without double resizing', async (platform) => {
+    const originalOS = Platform.OS
+    Object.defineProperty(Platform, 'OS', { configurable: true, value: platform })
+    const listeners: Record<string, Function> = {}
+    const remove = jest.fn()
+    jest.spyOn(Keyboard, 'addListener').mockImplementation((event, listener) => {
+      listeners[event] = listener
+      return { remove }
+    })
+    try {
+      const { getByTestId, UNSAFE_getByType, unmount } = renderPage(MessageView, {
+        route: { params: { orderId: 10 } }
+      })
+      const layout = async (height: number) => {
+        await act(async () => {
+          fireEvent(getByTestId('chat-keyboard-screen'), 'layout', {
+            persist: jest.fn(),
+            nativeEvent: { layout: { x: 0, y: 0, width: 390, height } }
+          })
+        })
+      }
+      const padding = () => StyleSheet.flatten(getByTestId('chat-keyboard-screen').props.style).paddingBottom
+      expect(UNSAFE_getByType(KeyboardAvoidingView).props.behavior).toBe('padding')
+      await layout(800)
+      await act(async () => {
+        listeners[platform === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow']({
+          duration: 0,
+          endCoordinates: { screenX: 0, screenY: 500, width: 390, height: 300 }
+        })
+      })
+      expect(padding()).toBe(300)
+      // adjustResize can consume the entire overlap before JavaScript handles it.
+      await layout(500)
+      expect(padding()).toBe(0)
+      await act(async () => {
+        listeners[platform === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide']({
+          duration: 0,
+          endCoordinates: { screenX: 0, screenY: 800, width: 390, height: 0 }
+        })
+      })
+      await layout(800)
+      expect(padding()).toBe(0)
+      unmount()
+      expect(remove).toHaveBeenCalledTimes(2)
+    } finally {
+      Object.defineProperty(Platform, 'OS', { configurable: true, value: originalOS })
+    }
+  })
+
   it('renders business chat with navbar and close handler', () => {
         const { getByTestId, navigation } = renderPage(MessageView, {
           route: {
@@ -127,4 +176,3 @@ describe('MessageView', () => {
         expect(removeBackHandler).toHaveBeenCalled()
       })
 })
-

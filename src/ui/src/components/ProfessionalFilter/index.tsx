@@ -86,7 +86,6 @@ export const ProfessionalFilter = (props: ProfessionalFilterParams) => {
       <OModal
 				open={open}
 				onClose={() => handleCloseProfile()}
-				entireModal
 			>
 				<ProfessionalProfile
           professional={currentProfessional}

@@ -22,9 +22,10 @@ export interface LoginParams {
   isGuest?: any;
   otpType?: string,
   setOtpType: (type: string) => void,
-  generateOtpCode: (values?: any) => void,
+  generateOtpCode: (values?: any, channel?: number) => void,
   useLoginOtpEmail?: boolean,
   useLoginOtpCellphone?: boolean,
+  useLoginOtpWhatsapp?: boolean,
   useLoginOtp?: boolean,
   setCellphoneStartZero?: any,
   projectChanged?: boolean,
@@ -138,6 +139,8 @@ export interface SignupParams {
   useSignUpFullDetails?: boolean;
   useSignUpOtpEmail?: boolean;
   useSignUpOtpCellphone?: boolean;
+  useSignUpOtpWhatsapp?: boolean;
+  embedded?: boolean;
   willVerifyOtpState?: boolean;
   isGuest?: any;
   numOtpInputs?: number;
@@ -145,7 +148,7 @@ export interface SignupParams {
   handleChangePromotions: () => void;
   handleChangeInput?: (in1: any, in2: any) => void;
   enableReCaptcha?: boolean;
-  generateOtpCode?: (in1?: any) => void;
+  generateOtpCode?: (in1?: any, channel?: number) => void;
   handleReCaptcha?: (token?: any) => void;
   setSignUpTab?: (in1: string) => void;
   setWillVerifyOtpState?: (in1: boolean) => void;
@@ -214,6 +217,7 @@ export interface BusinessesListingParams {
   onBusinessClick?: any;
 }
 export interface HighestRatedBusinessesParams {
+  layout?: string;
   businessesList: { businesses: Array<any>, loading: boolean, error: null | string };
   onBusinessClick?: void;
   navigation?: any;
@@ -481,6 +485,7 @@ export interface PreviousOrdersParams {
   handleUpdateOrderList?: (orderId: number, changes: any) => {}
 }
 export interface OrderDetailsParams {
+  onTrackingHeader?: (header: { subtitle?: string } | null) => void;
   navigation?: any,
   messagesReadList?: any,
   urlToShare?: string,
@@ -685,7 +690,7 @@ export interface UpsellingProductsParams {
   isCustomMode?: boolean;
   upsellingProducts?: any;
   business?: any;
-  businessId?: number;
+  businessId?: number | null;
   cartProducts?: Array<any>;
   handleUpsellingPage: (cart?: any) => void;
   openUpselling: boolean;

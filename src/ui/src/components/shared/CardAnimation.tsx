@@ -5,7 +5,7 @@ import styled from 'styled-components/native'
 const CardContainerTouchable = styled.TouchableOpacity``
 
 interface Props {
-  children: React.ReactChildren | Element,
+  children: React.ReactNode,
   style?: Array<ViewStyle> | any,
   onClick: any
 }

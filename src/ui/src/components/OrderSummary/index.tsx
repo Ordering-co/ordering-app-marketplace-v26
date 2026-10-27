@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ActivityIndicator, Alert, Platform, View, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, Alert, Platform, View, TouchableOpacity, TextInput } from 'react-native'
 import { useTheme } from 'styled-components/native';
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
@@ -76,7 +76,7 @@ export const OrderSummaryUI = (props: any) => {
   const [{ configs }] = useConfig();
   const [orderState] = useOrder();
   const [{ parsePrice, parseNumber }] = useUtils();
-  const commentRef = useRef()
+  const commentRef = useRef<TextInput>(null)
   const [openTaxModal, setOpenTaxModal] = useState<any>({ open: false, data: null, type: '' })
   const [showTaxesFeesDetail, setShowTaxesFeesDetail] = useState(false)
   const hideCartDiscount = hideCouponByValidationCheckout

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useTheme } from 'styled-components/native';
-import SelectDropdown from 'react-native-select-dropdown';
+import SelectDropdown, { SelectDropdownProps } from 'react-native-select-dropdown';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 
 import { Block, IconControl } from './styles'
@@ -36,8 +36,8 @@ export const BusinessReservationUI = (props: any) => {
   const [{ configs }] = useConfig()
   const [customerState] = useCustomer()
   const { top } = useSafeAreaInsets()
-  const [requiredFields, setRequiredFields] = useState([])
-  const [personsList, setPersonsList] = useState([])
+  const [requiredFields, setRequiredFields] = useState<string[]>([])
+  const [personsList, setPersonsList] = useState<{ value: number; text: string }[]>([])
   const [phoneUpdate, setPhoneUpdate] = useState(false);
   const dropdownRef = useRef<any>(null)
 
@@ -170,7 +170,7 @@ export const BusinessReservationUI = (props: any) => {
   }, [checkoutFieldsState, user, customerState, options?.type])
 
   useEffect(() => {
-    const _menuList: any = []
+    const _menuList: { value: number; text: string }[] = []
     const minPersons = reservationSetting?.min_guests_reservation
     const maxPersons = reservationSetting?.max_guests_reservation
     for (let i = minPersons; i <= maxPersons; i++) {
@@ -244,7 +244,7 @@ export const BusinessReservationUI = (props: any) => {
     },
     renderDropdownIcon: () => dropDownIcon(),
     dropdownOverlayColor: 'transparent'
-  }
+  } satisfies Omit<SelectDropdownProps, 'data' | 'onSelect'>
 
   const ViewRender = isCheckout ? View : ScrollView
 
@@ -337,7 +337,7 @@ export const BusinessReservationUI = (props: any) => {
       )}
       {!hidePlaceReservationButton && (
         <OButton
-          isDisabled={!reservationState?.changes?.guests_reservation || !reserveDate?.time || reservationState?.loading}
+          disabled={!reservationState?.changes?.guests_reservation || !reserveDate?.time || reservationState?.loading}
           onClick={onPlaceReservation}
           text={isCheckout ? t('UPDATE_RESERVATION', 'Update reservation') : orderingMethod === 1 ? t('PLACE_TABLE_RESERVATION_NOW', 'Place Table Reservation Now') : t('SET_TABLE_AND_CHOOSE_PRODUCTS', 'Set table and choose products')}
           style={{

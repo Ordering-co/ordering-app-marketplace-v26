@@ -197,6 +197,25 @@ describe('ProductForm', () => {
     expect(props.increment.mock.calls.length + props.decrement.mock.calls.length).toBeGreaterThanOrEqual(0)
   })
 
+  it('passes a boolean disabled to quantity controls when maximum_per_order is reached', () => {
+    const base = defaults()
+    const props = {
+      ...base,
+      productAddedToCartLength: 0,
+      productObject: {
+        ...base.productObject,
+        product: { ...base.productObject.product, minimum_per_order: 1, maximum_per_order: 1 }
+      }
+    }
+    const { UNSAFE_getAllByType } = renderWithProviders(<ProductOptionsUI {...props} />)
+    const { TouchableOpacity } = require('react-native')
+    const disabledValues = UNSAFE_getAllByType(TouchableOpacity)
+      .map((node: any) => node.props.disabled)
+      .filter((value: any) => value !== undefined)
+    expect(disabledValues.length).toBeGreaterThan(0)
+    disabledValues.forEach((value: any) => expect(typeof value).toBe('boolean'))
+  })
+
   it('selects extra option and navigates without canGoBack', () => {
     const props = {
       ...defaults(),

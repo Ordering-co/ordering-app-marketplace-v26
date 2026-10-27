@@ -49,7 +49,6 @@ export const ActiveOrders = (props: ActiveOrdersParams) => {
           <OButton
             onClick={loadMoreOrders}
             text={t('LOAD_MORE_ORDERS', 'Load more orders')}
-            imgRightSrc={null}
             loading={loading}
             style={{ borderRadius: 7.6, shadowOpacity: 0 }}
           />

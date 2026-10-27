@@ -157,7 +157,6 @@ const PaymentOptionCardUI = (props: any) => {
                 height: 44,
               }}
               textStyle={{ fontSize: 12 }}
-              imgRightSrc={null}
               onClick={() => iframeCardForm.includes(gateway) ? setShowGateway((prev: any) => ({ ...prev, open: true })) : setAddCardOpen({ ...addCardOpen, card: true })}
             />
           )}
@@ -215,8 +214,8 @@ const PaymentOptionCardUI = (props: any) => {
               )}
               <OButton
                 text={t('ADD_CARD', 'Add card')}
-                isDisabled={!newCard || cardsList?.loading}
-                isLoading={cardsList?.loading}
+                disabled={!newCard || cardsList?.loading}
+                loading={cardsList?.loading}
                 onClick={() => handleAddNewCard()}
                 style={{
                   margin: 20,

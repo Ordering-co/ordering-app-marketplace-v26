@@ -145,9 +145,8 @@ const SendGiftCardUI = (props: any) => {
         onClick={handleSubmit(onSubmit)}
         text={actionState?.loading ? t('LOADING', 'Loading') : t('SEND_GIFT_CARD', 'Send gift card')}
         textStyle={{ fontSize: 13 }}
-        imgRightSrc={null}
         style={style.btnStyle}
-        isDisabled={actionState.loading}
+        disabled={actionState.loading}
       />
     </Container>
   )

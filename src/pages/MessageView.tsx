@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BackHandler, View } from 'react-native'
+import { BackHandler, KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { useTheme } from 'styled-components/native'
 
 import { OrderDetails as MessageViewController, useLanguage } from '@components'
@@ -61,7 +61,7 @@ const OrderMessageUI = (props: any) => {
   const activeType = openMessages.driver ? USER_TYPE.DRIVER : USER_TYPE.BUSINESS
 
   return (
-    <>
+    <KeyboardAvoidingView behavior='padding' style={styles.screen} testID='chat-keyboard-screen'>
       <NavBar
         title={activeType === USER_TYPE.DRIVER ? order?.driver?.name : order?.business?.name}
         subtitle={activeType === USER_TYPE.DRIVER ? t('DRIVER', 'Driver') : t('BUSINESS', 'Business')}
@@ -80,9 +80,13 @@ const OrderMessageUI = (props: any) => {
           onClose={() => handleClose()}
         />
       </View>
-    </>
+    </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  screen: { flex: 1 }
+})
 
 const MessageView = (props: any) => {
   const orderDetailsProps = {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { StyleSheet, View, I18nManager, Keyboard } from 'react-native';
+import { StyleSheet, View, I18nManager, Keyboard, ScrollView } from 'react-native';
 import { useForm } from 'react-hook-form'
 import AntDesignIcons from 'react-native-vector-icons/AntDesign'
 import { useTheme } from 'styled-components/native'
@@ -58,7 +58,7 @@ export const ReviewOrderUI = (props: ReviewOrderParams) => {
   const [, t] = useLanguage()
   const [, { showToast }] = useToast()
   const { handleSubmit, control, errors } = useForm()
-  const scrollref = useRef<any>()
+  const scrollref = useRef<ScrollView>(null)
 
   const [alertState, setAlertState] = useState<{ open: boolean, content: Array<any>, success?: boolean }>({ open: false, content: [], success: false })
   const [comments, setComments] = useState<Array<any>>([])

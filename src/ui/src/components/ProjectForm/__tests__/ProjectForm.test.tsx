@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform, TextInput, Alert } from 'react-native'
+import { Platform, TextInput, Alert, ActivityIndicator } from 'react-native'
 import { act, fireEvent, waitFor } from '@testing-library/react-native'
 
 import { useApi, useConfig, useLanguage, useSession, useUtils } from '@components'
@@ -339,5 +339,13 @@ describe('ProjectForm', () => {
         )
         expect(navigation.goBack).toHaveBeenCalled()
       })
+
+  it('shows a loading indicator while project submission is pending', () => {
+    const { UNSAFE_getByType } = renderWithProviders(
+      <ProjectForm projectState={{ data: { project_name: 'synthetic-project' }, loading: true }} />
+    )
+    expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy()
+  })
+
 })
 

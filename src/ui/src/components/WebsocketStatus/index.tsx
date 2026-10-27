@@ -95,8 +95,6 @@ const SocketStatusUI = (props: any) => {
       <OModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        entireModal
-        customClose
       >
         <ModalContainer nestedScrollEnabled={true}>
           <ContentWrapper>

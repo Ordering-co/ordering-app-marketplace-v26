@@ -132,11 +132,8 @@ export const ProjectFormUI = (props: ProjectFormParams) => {
             ...styles.btnText,
             color: theme.colors.inputTextColor,
           }}
-          bgColor={theme.colors.primary}
-          borderColor={theme.colors.primary}
-          isLoading={projectState?.loading}
+          loading={projectState?.loading}
           style={styles.btn}
-          imgRightSrc={false}
           onClick={() => {
             Keyboard.dismiss()
             handleSubmit(onSubmit)()

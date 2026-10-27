@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TextStyle } from 'react-native';
+import { TextProps, TextStyle } from 'react-native';
 import styled, { css, useTheme } from 'styled-components/native';
 
 /**
@@ -44,12 +44,13 @@ const SText = styled.Text`
     `};
 `;
 interface Props {
+  testID?: TextProps['testID'];
   color?: string;
   size?: number;
   align?: 'center' | 'left' | 'right';
   weight?: any;
   style?: TextStyle;
-  children?: JSX.Element | JSX.Element[] | string;
+  children?: TextProps['children'];
   isWrap?: boolean;
   hasBottom?: boolean;
   mBottom?: any;

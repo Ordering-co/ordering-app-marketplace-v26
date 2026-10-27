@@ -96,6 +96,8 @@
 		<key>NSCameraUsageDescription</key>
 		<string>The app requires access to the camera for the profile picture, to upload images to
 			communicate via the messaging features of the app.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>We only use your location while you use the app, to show restaurants and stores near you and to set your delivery address. You can also enter your address manually.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>We use your location to show restaurants and stores near you and to set your delivery
 			address. You can also enter your address manually.</string>

@@ -48,7 +48,6 @@ export const PreviousOrders = (props: PreviousOrdersParams) => {
           <OButton
             onClick={loadMoreOrders}
             text={t('LOAD_MORE_ORDERS', 'Load more orders')}
-            imgRightSrc={null}
             style={{ borderRadius: 7.6, shadowOpacity: 0, marginTop: 20 }}
           />
         </WrappButton>

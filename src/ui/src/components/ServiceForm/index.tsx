@@ -563,7 +563,7 @@ const ServiceFormUI = (props: ServiceFormParams) => {
                       ? t('SOLD_OUT', 'Sold out')
                       : t('BOOK', 'Book'))}
                   style={styles.buttonStyle}
-                  isDisabled={isSoldOut || maxProductQuantity <= 0 || !currentProfessional?.id || !dateSelected || isBusyTime(currentProfessional, dateSelected)}
+                  disabled={isSoldOut || maxProductQuantity <= 0 || !currentProfessional?.id || !dateSelected || isBusyTime(currentProfessional, dateSelected)}
                   textStyle={{ fontSize: 14 }}
                 />
               )}
@@ -571,9 +571,8 @@ const ServiceFormUI = (props: ServiceFormParams) => {
               !orderState.options?.address_id &&
               (orderState.loading ? (
                 <OButton
-                  isDisabled
+                  disabled
                   text={t('LOADING', 'Loading')}
-                  imgRightSrc=""
                   textStyle={{ fontSize: 10 }}
                 />
               ) : (
@@ -581,14 +580,13 @@ const ServiceFormUI = (props: ServiceFormParams) => {
               ))}
             {!auth && (
               <OButton
-                isDisabled={isSoldOut || maxProductQuantity <= 0}
+                disabled={isSoldOut || maxProductQuantity <= 0}
                 onClick={() => handleRedirectLogin()}
                 text={
                   isSoldOut || maxProductQuantity <= 0
                     ? t('SOLD_OUT', 'Sold out')
                     : t('LOGIN_SIGNUP', 'Login / Sign Up')
                 }
-                imgRightSrc=""
                 textStyle={{ color: theme.colors.primary, fontSize: 14 }}
                 style={{
                   height: 44,
@@ -614,7 +612,6 @@ const ServiceFormUI = (props: ServiceFormParams) => {
       <OModal
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        entireModal
       >
         <ScrollView contentContainerStyle={styles.professionalList}>
           <View style={{ paddingVertical: 11 }}>

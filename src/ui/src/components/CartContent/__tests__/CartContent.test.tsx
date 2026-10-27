@@ -10,6 +10,20 @@ import { renderWithProviders } from '../../../../../../jest/helpers/renderWithPr
 jest.mock('@components', () => require('../../../../../../jest/helpers/m4MenuComponentsMock').getMock())
 jest.mock('@ui', () => require('../../../../../../jest/helpers/m4MenuUiMock').getUiMock())
 
+const mockPreview: any = { cartGroup: null, isPending: false, calls: [] }
+jest.mock('../../../hooks/useCartGroupPreview', () => ({
+  useCartGroupPreview: (options: any) => {
+    mockPreview.calls.push(options)
+    return { cartGroup: mockPreview.cartGroup, isPending: mockPreview.isPending, loading: mockPreview.isPending }
+  }
+}))
+
+beforeEach(() => {
+  mockPreview.cartGroup = null
+  mockPreview.isPending = false
+  mockPreview.calls = []
+})
+
 const navigation = {
   navigate: jest.fn(),
   addListener: jest.fn((event, cb) => {
@@ -215,5 +229,93 @@ describe('CartContent', () => {
     )
     fireEvent.press(getAllByText('Checkout')[0])
     expect(onNavigationRedirect).toHaveBeenCalledWith('MultiCheckout', { checkCarts: true })
+  })
+
+  describe('combined totals with the cart group pricing', () => {
+    const multiBusinessConfigs = {
+      checkout_multi_business_enabled: { value: '1' },
+      multi_business_checkout_show_combined_delivery_fee: { value: '1' },
+      multi_business_checkout_show_combined_driver_tip: { value: '1' }
+    }
+    const buildCarts = () => {
+      const salad = { ...sampleCart(), uuid: 'salad', business_id: 100, valid: true, status: 0, total: 69, delivery_price_with_discount: 8.57, driver_tip: 0, group: null }
+      const demoCart = {
+        ...sampleCart(),
+        uuid: 'demoCart',
+        business_id: 102,
+        business: { ...sampleCart().business, id: 102, name: 'Sample Store Two', slug: 'demoCart' },
+        valid: true,
+        status: 0,
+        total: 105,
+        delivery_price_with_discount: 8.57,
+        driver_tip: 0,
+        group: null
+      }
+      return { salad, demoCart }
+    }
+
+    const renderCarts = () => {
+      const { salad, demoCart } = buildCarts()
+      ;(useOrder as jest.Mock).mockReturnValue([{
+        loading: false,
+        options: { type: 1 },
+        carts: { 'businessId:100': salad, 'businessId:102': demoCart }
+      }, { confirmCart: jest.fn() }])
+      ;(useConfig as jest.Mock).mockReturnValue([{ configs: multiBusinessConfigs }])
+      return renderWithProviders(<CartContent onNavigationRedirect={jest.fn()} navigation={navigation} />)
+    }
+
+    it('sums each cart delivery fee while the group pricing is unavailable', () => {
+      const { getByText, getAllByText } = renderCarts()
+      expect(getByText('$17.14')).toBeTruthy()
+      expect(getAllByText('$174')).toHaveLength(2)
+      expect(mockPreview.calls[mockPreview.calls.length - 1]).toEqual({ enabled: true })
+    })
+
+    it('shows the group delivery fee and totals once the cart group is priced', () => {
+      const { salad, demoCart } = buildCarts()
+      mockPreview.cartGroup = { uuid: 'group-1', carts: [salad, { ...demoCart, delivery_price_with_discount: 0, total: 96 }] }
+      const { getByText, getAllByText, queryByText } = renderCarts()
+      expect(getByText('$8.57')).toBeTruthy()
+      expect(getAllByText('$165')).toHaveLength(2)
+      expect(queryByText('$17.14')).toBeNull()
+    })
+
+    it('shows skeletons instead of the per cart sums while the group pricing loads', () => {
+      mockPreview.isPending = true
+      const { getByText, queryByText, getAllByTestId } = renderCarts()
+      expect(getByText('Total delivery fee')).toBeTruthy()
+      expect(queryByText('$17.14')).toBeNull()
+      expect(queryByText('$174')).toBeNull()
+      expect(getAllByTestId('placeholder')).toHaveLength(3)
+    })
+
+    it('checks out the priced cart group even when the carts still carry an older group', () => {
+      const { salad, demoCart } = buildCarts()
+      mockPreview.cartGroup = { uuid: 'group-1', carts: [salad, demoCart] }
+      const stale = { group: { uuid: 'old-group' } }
+      const onNavigationRedirect = jest.fn()
+      ;(useOrder as jest.Mock).mockReturnValue([{
+        loading: false,
+        options: { type: 1 },
+        carts: { 'businessId:100': { ...salad, ...stale }, 'businessId:102': { ...demoCart, ...stale } }
+      }, { confirmCart: jest.fn() }])
+      ;(useConfig as jest.Mock).mockReturnValue([{ configs: multiBusinessConfigs }])
+      const { getAllByText } = renderWithProviders(<CartContent onNavigationRedirect={onNavigationRedirect} navigation={navigation} />)
+      fireEvent.press(getAllByText('Checkout')[0])
+      expect(onNavigationRedirect).toHaveBeenCalledWith('MultiCheckout', { cartUuid: 'group-1' })
+    })
+
+    it('does not request the group pricing for reservations', () => {
+      const reservationCart = { ...sampleCart(), reservation: { id: 1 }, valid: true }
+      ;(useOrder as jest.Mock).mockReturnValue([{
+        loading: false,
+        options: { type: 1 },
+        carts: { r: reservationCart }
+      }, { confirmCart: jest.fn() }])
+      ;(useConfig as jest.Mock).mockReturnValue([{ configs: multiBusinessConfigs }])
+      renderWithProviders(<CartContent onNavigationRedirect={jest.fn()} navigation={navigation} />)
+      expect(mockPreview.calls[mockPreview.calls.length - 1]).toEqual({ enabled: false })
+    })
   })
 })

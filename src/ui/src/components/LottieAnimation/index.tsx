@@ -4,6 +4,8 @@ import { TouchableOpacity, Easing, ViewStyle, Animated } from 'react-native';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import { useTheme } from 'styled-components';
 
+const AnimatedLottie = Animated.createAnimatedComponent(Lottie)
+
 interface Props {
   initialValue: number,
   onClick: any,
@@ -85,7 +87,7 @@ export const LottieAnimation = (props: Props) => {
       ) : (
         <>
           {!isHide &&
-            <Lottie
+            <AnimatedLottie
               progress={animationProgress.current}
               source={animationGif}
             />

@@ -241,7 +241,6 @@ const MessagesUI = (props: MessagesParams) => {
         paddingBottom: isKeyboardShow ? 0 : bottom,
       }}
       primaryStyle={{ alignItems: 'center', justifyContent: 'space-between' }}
-      {...(!chatDisabled ? { renderAccessory: () => renderAccessory() } : {})}
     />
   )
 
@@ -409,7 +408,7 @@ const MessagesUI = (props: MessagesParams) => {
   }, [messages.messages.length, business, driver])
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+    const keyboardDidShowListener = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => {
       setIsKeyboardShow(true)
     })
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
@@ -441,6 +440,7 @@ const MessagesUI = (props: MessagesParams) => {
   return (
     <Container>
       <GiftedChat
+        isKeyboardInternallyHandled={false}
         alignTop
         scrollToBottom
         locale={chatLanguagesAvailable(languageState?.language?.code)}
@@ -450,6 +450,7 @@ const MessagesUI = (props: MessagesParams) => {
         onLongPress={(context: any, message: any) => onLongPress(context, message)}
         isLoadingEarlier={messages.loading}
         renderInputToolbar={renderInputToolbar}
+        renderAccessory={!chatDisabled ? renderAccessory : undefined}
         renderComposer={renderComposer}
         renderSend={renderSend}
         renderBubble={renderBubble}

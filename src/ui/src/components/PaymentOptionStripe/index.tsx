@@ -133,7 +133,6 @@ const PaymentOptionStripeUI = (props: any) => {
             text={t('ADD_PAYMENT_CARD', 'Add New Payment Card')}
             class='secondary'
             style={styles.btnAddStyle}
-            imgRightSrc={null}
             onClick={() => setAddCardOpen(true)}
           />
           <OSActions>
@@ -142,7 +141,6 @@ const PaymentOptionStripeUI = (props: any) => {
                 text={t('CANCEL', 'Cancel')}
                 class='secondary'
                 style={styles.btnAction}
-                imgRightSrc={null}
                 onClick={() => onCancel()}
               />
             </View>
@@ -150,8 +148,7 @@ const PaymentOptionStripeUI = (props: any) => {
               <OButton
                 text={t('ACCEPT', 'Accept')}
                 style={styles.btnAction}
-                imgRightSrc={null}
-                isDisabled={!cardSelected || cardsList?.cards?.length === 0}
+                disabled={!cardSelected || cardsList?.cards?.length === 0}
                 onClick={() => onSelectCard(cardSelected)}
               />
             </View>
@@ -160,7 +157,6 @@ const PaymentOptionStripeUI = (props: any) => {
       )}
 
       <OModal
-        isNotDecoration
         title={t('ADD_CREDIT_OR_DEBIT_CARD', 'Add credit or debit card')}
         open={addCartOpen}
         onClose={() => setAddCardOpen(false)}

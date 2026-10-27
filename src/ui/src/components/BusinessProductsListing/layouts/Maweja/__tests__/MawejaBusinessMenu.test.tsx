@@ -5,6 +5,7 @@ import { act, fireEvent } from '@testing-library/react-native'
 import { useConfig, useOrder } from '@components'
 
 import { MawejaBusinessMenu } from '..'
+import { PRODUCT_DESCRIPTION_LIMIT } from '../truncateDescription'
 import { renderWithProviders } from '../../../../../../../../jest/helpers/renderWithProviders'
 
 jest.mock('@components', () => {
@@ -165,6 +166,21 @@ describe('MawejaBusinessMenu quick add', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('ProductDetails', expect.objectContaining({
       productId: 204
     }))
+  })
+
+  it('shows a short description in full and cuts a long one after 150 characters', () => {
+    const short = 'Fresh slice.'
+    const long = `${'a'.repeat(PRODUCT_DESCRIPTION_LIMIT)}!`
+    const { getByTestId, queryByTestId } = renderMenu([
+      { ...plainProduct, description: short },
+      { ...plainProduct, id: 205, name: 'Long Slice', description: long },
+      { ...plainProduct, id: 206, name: 'Plain Slice' }
+    ], '0')
+
+    const textOf = (id: string) => getByTestId(id).props.children[0]
+    expect(textOf('maweja-product-description-201')).toBe(short)
+    expect(textOf('maweja-product-description-205')).toBe(`${'a'.repeat(PRODUCT_DESCRIPTION_LIMIT)}…`)
+    expect(queryByTestId('maweja-product-description-206')).toBeNull()
   })
 
   it('opens the detail for an inventoried product', async () => {

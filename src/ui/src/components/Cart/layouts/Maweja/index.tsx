@@ -53,8 +53,28 @@ import {
 
 const deliveryTypes = [1, 7]
 
-const cartsWithProducts = (carts: any, type: any) => (
-  Object.values(carts || {}).filter((cart: any) => cart?.products?.length > 0 || (cart?.reservation && type === 9))
+interface MawejaCart {
+  uuid: string;
+  business_id?: number | null;
+  business?: { slug?: string; name?: string; logo?: string; vertical?: string };
+  products?: { quantity?: number }[];
+  reservation?: object | null;
+  status?: number;
+  valid_maximum?: boolean;
+  valid_minimum?: boolean;
+  valid_address?: boolean;
+  maximum?: number;
+  minimum?: number;
+  subtotal?: number;
+  total?: number;
+  delivery_price_with_discount?: number | null;
+  delivery_price?: number;
+  zone?: { name?: string };
+  delivery_zone?: { name?: string };
+}
+
+const cartsWithProducts = (carts: Record<string, MawejaCart> | null | undefined, type: number) => (
+  Object.values(carts || {}).filter(cart => (cart?.products?.length ?? 0) > 0 || (cart?.reservation && type === 9))
 )
 
 const belowMinimumFor = (cart: any) => {

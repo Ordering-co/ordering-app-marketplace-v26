@@ -89,8 +89,6 @@ const SingleOrderCardUI = (props: any) => {
             textStyle={{ textAlign: 'center', fontSize: 14 }}
             style={{ flexDirection: 'row', justifyContent: 'center', borderRadius: 7.6, shadowOpacity: 0, paddingLeft: 5, paddingRight: 5, height: 44 }}
             text={t('ORDER_DETAILS', 'Order Details')}
-            bgColor={theme.colors.white}
-            borderColor={theme.colors.primary}
           />
         )}
       </View>

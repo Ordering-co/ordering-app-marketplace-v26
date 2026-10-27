@@ -51,8 +51,6 @@ export const NotificationSetting = (props: NotificationSettingPropsParams) => {
         </View>
         <OButton
           text={t('ENABLE_NOTIFICATIONS', 'Enable notifications')}
-          bgColor={theme.colors.primary}
-          borderColor={theme.colors.primary}
           parentStyle={styles.parentStyle}
           style={styles.button}
           textStyle={{ color: 'white' }}

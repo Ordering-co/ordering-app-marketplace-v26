@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { StyleSheet, View, I18nManager, Keyboard } from 'react-native'
+import { StyleSheet, View, I18nManager, Keyboard, ScrollView } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { useTheme } from 'styled-components/native'
 import { useForm } from 'react-hook-form'
@@ -39,7 +39,7 @@ const ReviewDriverUI = (props: ReviewDriverParams) => {
   const theme = useTheme()
   const { handleSubmit, errors } = useForm()
   const [, { showToast }] = useToast()
-  const scrollref = useRef<any>()
+  const scrollref = useRef<ScrollView>(null)
 
   const [isDriverReviewed, setIsDriverReviewed] = useState(false)
   const [qualification, setQualification] = useState(5)

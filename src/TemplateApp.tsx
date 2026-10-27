@@ -9,7 +9,7 @@ import { isLocalSimulatorMode } from './onboarding/ios-local-mode';
 
 import * as React from 'react';
 import { LogBox, StatusBar, Platform } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions, NavigatorScreenParams } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -18,7 +18,7 @@ import UpdatedThemeProvider from './contexts/UpdatedThemeProvider';
 import { PermissionsProvider } from './contexts/UpdatedThemeProvider/PermissionsContext';
 import { navigationRef } from './navigators/NavigationRef';
 import settings from './config.js';
-import theme from './theme.json';
+import themeConfig from './theme.json';
 
 import { OrderingProvider, useConfig, useSession, useApi } from '@components';
 
@@ -61,7 +61,7 @@ LogBox.ignoreLogs([
   'ReactImageView: Image source'
 ]);
 
-theme.images = {
+const images = {
   logos: {
     logotype: require('./assets/images/logotype.png'),
     logotypeInvert: require('./assets/images/logo-long.png'),
@@ -210,6 +210,8 @@ theme.images = {
   },
 };
 
+const theme = { ...themeConfig, images };
+
 const ConsentConfigSync = () => {
   const [{ configs, loading: configLoading }] = useConfig()
   const { setIsConsentEnabled } = useCookieConsent()
@@ -352,7 +354,15 @@ const TemplateApp = () => {
     )
   }
 
-  const linking = {
+  const linking: LinkingOptions<{
+    MyAccount: NavigatorScreenParams<{
+      BottomTab: undefined;
+      Business: { store: string; category?: string; categoryId?: string; product?: string; productId?: string };
+      CheckoutPage: { cartUuid: string };
+      OrderDetails: { orderId: string };
+    }>;
+    NotFound: undefined;
+  }> = {
     prefixes: [`${settings.app_scheme}://`],
     config: {
       screens: {

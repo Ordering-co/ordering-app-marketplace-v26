@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import { useApi } from '@components'
 
 /**
@@ -66,11 +65,4 @@ export const CmsContent = (props: any) => {
       )}
     </>
   )
-}
-
-CmsContent.propTypes = {
-  /**
-   * UI Component, this must be containt all graphic elements and use parent props
-   */
-  UIComponent: PropTypes.elementType
 }

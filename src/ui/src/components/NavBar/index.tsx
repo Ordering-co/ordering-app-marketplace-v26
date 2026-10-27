@@ -15,7 +15,7 @@ interface Props {
   right?: any,
   onActionLeft?: () => void,
   textStyle?: TextStyle,
-  textSubTitleStyle?: ViewStyle,
+  textSubTitleStyle?: TextStyle,
   style?: ViewStyle,
   noTitle?: boolean,
   pt?: number,

@@ -138,7 +138,6 @@ const StripeRedirectFormUI = (props: any) => {
 			<OButton
 				// text={formState.isSubmitting ? t('LOADING', 'Loading...') : t('OK', 'OK')}
 				text={t('OK', 'OK')}
-				imgRightSrc={null}
 				// isDisabled={formState.isSubmitting}
 				// onClick={() => handleSubmit(onSubmit)}
 				onClick={() => handleCreateSource()}

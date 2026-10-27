@@ -108,8 +108,6 @@ const OrdersOptionUI = (props: OrdersOptionParams) => {
       {!!seletedOrder?.id && (
         <OModal
           open={!!seletedOrder?.id}
-          entireModal
-          customClose
           onClose={() => setSeletedOrder(null)}
         >
           <MessagesView

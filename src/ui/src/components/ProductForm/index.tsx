@@ -855,7 +855,7 @@ export const ProductOptionsUI = (props: any) => {
                     disabled={
                       maxProductQuantity <= 0 ||
                       (productCart?.quantity + productAddedToCartLength) >= maxProductQuantity ||
-                      ((productCart?.quantity + productAddedToCartLength) >= product?.maximum_per_order && product?.maximum_per_order) ||
+                      (!!product?.maximum_per_order && (productCart?.quantity + productAddedToCartLength) >= product?.maximum_per_order) ||
                       isSoldOut
                     }>
                     <FeatherIcon
@@ -864,7 +864,7 @@ export const ProductOptionsUI = (props: any) => {
                       color={
                         maxProductQuantity <= 0 ||
                           (productCart?.quantity + productAddedToCartLength) >= maxProductQuantity ||
-                          ((productCart?.quantity + productAddedToCartLength) >= product?.maximum_per_order && product?.maximum_per_order) ||
+                          (!!product?.maximum_per_order && (productCart?.quantity + productAddedToCartLength) >= product?.maximum_per_order) ||
                           isSoldOut
                           ? theme.colors.black
                           : theme.colors.active

@@ -3,7 +3,21 @@ import { View } from 'react-native'
 import { OText } from '@ui'
 import { AddressSuggestContainer } from './styles'
 
-export const AddressMapBoxList = (props) => {
+interface MapboxSuggestion {
+  mapbox_id?: string;
+  full_address?: string;
+  name: string;
+}
+
+interface Props {
+  mapBoxSuggests?: MapboxSuggestion[];
+  retrieveSuggestResult: (id: string | undefined, onRetrieve: (address: unknown) => void) => void;
+  handleChangeAddressMapbox: (address: unknown) => void;
+  onBlurInput: () => void;
+  handleChangeInputAddress: (address: string) => void;
+}
+
+export const AddressMapBoxList = (props: Props) => {
   const {
     mapBoxSuggests,
     retrieveSuggestResult,
@@ -12,7 +26,7 @@ export const AddressMapBoxList = (props) => {
     handleChangeInputAddress
   } = props
 
-  const handleClick = (suggest: any) => {
+  const handleClick = (suggest: MapboxSuggestion) => {
     retrieveSuggestResult(suggest?.mapbox_id, handleChangeAddressMapbox)
     handleChangeInputAddress(suggest?.full_address || suggest?.name)
     onBlurInput()
@@ -20,7 +34,7 @@ export const AddressMapBoxList = (props) => {
 
   return (
     <View>
-      {mapBoxSuggests?.map((suggest: any) => (
+      {mapBoxSuggests?.map((suggest: MapboxSuggestion) => (
         <AddressSuggestContainer
           key={suggest?.mapbox_id}
           onPress={() => handleClick(suggest)}

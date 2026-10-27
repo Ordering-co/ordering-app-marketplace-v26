@@ -54,18 +54,14 @@ const StripeCardFormUI = (props: any) => {
         <View style={{ width: '49%' }}>
           <OButton
             text={t('CANCEL', 'Cancel')}
-            bgColor={theme.colors.backgroundGray}
-            borderColor={theme.colors.backgroundGray}
             textStyle={{ color: 'white' }}
-            imgRightSrc={null}
             onClick={() => handleCancel()}
           />
         </View>
         <View style={{ width: '49%' }}>
           <OButton
             text={loading ? t('LOADING', 'Loading...') : t('ADD', 'Add')}
-            isDisabled={!cardState?.valid || loading}
-            imgRightSrc={null}
+            disabled={!cardState?.valid || loading}
             onClick={handleSubmit}
           />
         </View>

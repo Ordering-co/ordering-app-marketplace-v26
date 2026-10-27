@@ -21,7 +21,6 @@ const CategoryDescription = (props: CategoryDescriptionParams) => {
     <OModal
       open={!!props.openDescription}
       onClose={() => props.setOpenDescription(null)}
-      entireModal
       title={props.openDescription?.name}
     >
       <Container height={(height - top - bottom - 60)}>

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { Fade, Placeholder, PlaceholderLine } from 'rn-placeholder';
 import { CCContainer, CCNotCarts, CCList, ChCartsTotal } from './styles';
 
 import { useLanguage, useConfig, useUtils, useOrder } from '@components';
@@ -11,12 +12,21 @@ import {
   OText,
   NotFoundSource
 } from '@ui'
+import { useCartGroupPreview } from '../../hooks/useCartGroupPreview'
 
-const CartGroup = React.memo(({ group, index, renderCart, handleClickCheckout }: {
+const PriceSkeleton = ({ width }: { width: number }) => (
+  <Placeholder Animation={Fade} style={{ width }}>
+    <PlaceholderLine height={14} style={{ marginBottom: 0 }} />
+  </Placeholder>
+)
+
+const CartGroup = React.memo(({ group, index, renderCart, handleClickCheckout, groupCartsByUuid, isGroupPricingPending }: {
   group: any[],
   index: number,
-  renderCart: (cart: any) => JSX.Element,
-  handleClickCheckout: (group: any[], uuid: string | null) => void
+  renderCart: (cart: any) => React.JSX.Element,
+  handleClickCheckout: (group: any[], uuid: string | null) => void,
+  groupCartsByUuid?: Record<string, any>,
+  isGroupPricingPending?: boolean
 }) => {
   const [, t] = useLanguage()
   const theme = useTheme()
@@ -24,7 +34,7 @@ const CartGroup = React.memo(({ group, index, renderCart, handleClickCheckout }:
 
   const validCarts = useMemo(() => group.filter((cart: any) => cart?.valid), [group])
   const hasPending = useMemo(() => validCarts.some((cart: any) => cart?.status === 2), [validCarts])
-  const totalForCart = useMemo(() => validCarts.reduce((total: number, cart: any) => total + cart?.total, 0), [validCarts])
+  const totalForCart = useMemo(() => validCarts.reduce((total: number, cart: any) => total + (groupCartsByUuid?.[cart?.uuid] ?? cart)?.total, 0), [validCarts, groupCartsByUuid])
 
   return (
     <>
@@ -48,7 +58,7 @@ const CartGroup = React.memo(({ group, index, renderCart, handleClickCheckout }:
       {validCarts?.length > 0 && (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <OText>{t('TOTAL_FOR', 'Total for')} {t('CART', 'Cart')} #{index + 1}</OText>
-          <OText>{parsePrice(totalForCart)}</OText>
+          {isGroupPricingPending && !hasPending ? <PriceSkeleton width={80} /> : <OText>{parsePrice(totalForCart)}</OText>}
         </View>
       )}
     </>
@@ -166,10 +176,20 @@ export const CartContent = React.memo((props: any) => {
   const hasCartReservation = carts?.some((cart: any) => cart?.reservation)
 
   const cartsAvailable: any = useMemo(() => Object.values(carts || {})?.filter?.((cart: any) => cart?.valid), [carts])
-  const totalCartsPrice = cartsAvailable?.length && cartsAvailable.reduce((total: any, cart: any) => { return total + cart?.total }, 0)
-  const totalCartsFee = cartsAvailable?.length && cartsAvailable
+  const { cartGroup, isPending: isGroupPricingPending } = useCartGroupPreview({ enabled: isMultiCheckout && !hasCartReservation })
+  const groupCartsByUuid = useMemo(
+    () => (cartGroup?.carts || []).reduce((map: Record<string, any>, cart: any) => ({ ...map, [cart?.uuid]: cart }), {}),
+    [cartGroup]
+  )
+  const pricedCarts: any[] = useMemo(
+    () => cartsAvailable.map((cart: any) => groupCartsByUuid[cart?.uuid] ?? cart),
+    [cartsAvailable, groupCartsByUuid]
+  )
+  const totalCartsPrice = pricedCarts?.length && pricedCarts.reduce((total: any, cart: any) => { return total + cart?.total }, 0)
+  const totalCartsFee = pricedCarts?.length && pricedCarts
     ?.filter((cart: any) => cart?.status !== 1 && cart?.valid && cart?.products?.length)
     ?.reduce((total: any, cart: any) => { return total + (cart?.delivery_price_with_discount) }, 0)
+  const totalDriverTip = pricedCarts.reduce((sum: any, cart: any) => sum + (cart?.driver_tip || 0), 0)
 
   const cartGroups = useMemo(() => {
     if (!carts?.length) return {}
@@ -203,8 +223,10 @@ export const CartContent = React.memo((props: any) => {
 
   const handleCheckoutRedirect = useCallback((group: any[], singleUuid: string | null) => {
     const isSingleCart = cartsAvailable.length === 1
-    const hasNotGroup = group.some((cart: any) => !cart?.group?.uuid)
-    const cartGroupUuid = group[0]?.group?.uuid
+    const groupValidCarts = group.filter((cart: any) => cart?.valid)
+    const previewGroupUuid = cartGroup?.uuid && groupValidCarts.length && groupValidCarts.every((cart: any) => groupCartsByUuid[cart?.uuid]) ? cartGroup.uuid : null
+    const hasNotGroup = !previewGroupUuid && group.some((cart: any) => !cart?.group?.uuid)
+    const cartGroupUuid = previewGroupUuid ?? group[0]?.group?.uuid
 
     if (isSingleCart || singleUuid) {
       onNavigationRedirect('CheckoutPage', {
@@ -219,7 +241,7 @@ export const CartContent = React.memo((props: any) => {
         cartUuid: cartGroupUuid
       })
     }
-  }, [cartsAvailable, onNavigationRedirect])
+  }, [cartsAvailable, onNavigationRedirect, cartGroup, groupCartsByUuid])
 
   const changeActiveState = useCallback((isClosed: boolean, uuid: string) => {
     const isActive = cartsOpened?.includes?.(uuid) || !!singleBusiness
@@ -262,6 +284,8 @@ export const CartContent = React.memo((props: any) => {
                     index={i}
                     renderCart={renderCart}
                     handleClickCheckout={handleCheckoutRedirect}
+                    groupCartsByUuid={groupCartsByUuid}
+                    isGroupPricingPending={isGroupPricingPending}
                   />
                   <View style={{ height: 1, backgroundColor: '#ccc', width: '100%', marginVertical: 10 }} />
                 </React.Fragment>
@@ -275,24 +299,26 @@ export const CartContent = React.memo((props: any) => {
               {!!cartsAvailable.length && (
                 <>
                   <ChCartsTotal>
-                    {!!totalCartsFee && configs?.multi_business_checkout_show_combined_delivery_fee?.value === '1' && (
+                    {(isGroupPricingPending || !!totalCartsFee) && configs?.multi_business_checkout_show_combined_delivery_fee?.value === '1' && (
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <OText size={14} lineHeight={24} color={theme.colors.textNormal} weight={'400'}>
                           {t('TOTAL_DELIVERY_FEE', 'Total delivery fee')}
                         </OText>
-                        <OText size={14} lineHeight={24} color={theme.colors.textNormal} weight={'400'}>
-                          {parsePrice(totalCartsFee)}
-                        </OText>
+                        {isGroupPricingPending ? <PriceSkeleton width={60} /> : (
+                          <OText size={14} lineHeight={24} color={theme.colors.textNormal} weight={'400'}>
+                            {parsePrice(totalCartsFee)}
+                          </OText>
+                        )}
                       </View>
                     )}
-                    {cartsAvailable.reduce((sum: any, cart: any) => sum + (cart?.driver_tip || 0), 0) > 0 &&
+                    {totalDriverTip > 0 &&
                       configs?.multi_business_checkout_show_combined_driver_tip?.value === '1' && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                           <OText size={14} lineHeight={24} color={theme.colors.textNormal} weight={'400'}>
                             {t('DRIVER_TIP', 'Driver tip')}
                           </OText>
                           <OText size={14} lineHeight={24} color={theme.colors.textNormal} weight={'400'}>
-                            {parsePrice(cartsAvailable.reduce((sum: any, cart: any) => sum + (cart?.driver_tip || 0), 0))}
+                            {parsePrice(totalDriverTip)}
                           </OText>
                         </View>
                       )}
@@ -300,7 +326,9 @@ export const CartContent = React.memo((props: any) => {
                       <OText size={16} lineHeight={24} color={theme.colors.textNormal} weight={'500'}>
                         {t('TOTAL_FOR_ALL_CARTS', 'Total for all Carts')}
                       </OText>
-                      <OText size={16} lineHeight={24} color={theme.colors.textNormal} weight={'500'}>{parsePrice(totalCartsPrice)}</OText>
+                      {isGroupPricingPending ? <PriceSkeleton width={90} /> : (
+                        <OText size={16} lineHeight={24} color={theme.colors.textNormal} weight={'500'}>{parsePrice(totalCartsPrice)}</OText>
+                      )}
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 20 }}>
                       <OText size={14} color={theme.colors.textNormal} weight={'300'} style={{ textAlign: 'center' }}>

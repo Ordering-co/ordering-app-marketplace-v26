@@ -203,9 +203,8 @@ const ForgotPasswordUI = (props: any) => {
 
           <OButton
             text={emailSent && !formState.result?.error ? t('LINK_SEND_FORGOT_PASSWORD', 'Link Sent') : t('FRONT_RECOVER_PASSWORD', 'Recover Password')}
-            isDisabled={formState.loading || emailSent && !formState.result?.error}
-            isLoading={formState.loading}
-            imgRightSrc={null}
+            disabled={formState.loading || emailSent && !formState.result?.error}
+            loading={formState.loading}
             onClick={emailSent && !formState.result?.error ? () => { } : handleSubmit(onSubmit)}
             style={{ borderRadius: 7.6, shadowOpacity: 0 }}
           />

@@ -27,6 +27,9 @@ export const CartProductCard = (props: any) => {
   const hasImage = !!product?.images
   const [isUpdating, setIsUpdating] = useState(false)
   const [optimisticQuantity, setOptimisticQuantity] = useState(product?.quantity)
+  const otherLinesQuantity = (product?.balance ?? product?.quantity ?? 0) - (product?.quantity ?? 0)
+  const isMaximumReached = !!product?.maximum_per_order && otherLinesQuantity + optimisticQuantity >= product?.maximum_per_order
+  const isIncrementDisabled = isUpdating || isMaximumReached
 
   const handleChangeQuantity = async (newQuantity: number) => {
     if (isUpdating) return
@@ -168,8 +171,8 @@ export const CartProductCard = (props: any) => {
                   {!isDisabledEdit && onEditProduct && isCartProduct && !isCartPending && product?.valid_menu && (
                     <TouchableOpacity
                       onPress={() => handleChangeQuantity(optimisticQuantity + 1)}
-                      disabled={isUpdating}
-                      style={{ opacity: isUpdating ? 0.5 : 1 }}
+                      disabled={isIncrementDisabled}
+                      style={{ opacity: isIncrementDisabled ? 0.5 : 1 }}
                     >
                       <OIcon
                         src={theme.images.general.tag_plus}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { ScrollView } from 'react-native'
 import { useTheme } from 'styled-components/native'
 
 import { ReviewProductParams } from '../../types'
@@ -19,7 +20,7 @@ const ReviewProductsUI = (props: ReviewProductParams) => {
   const [, t] = useLanguage()
   const theme = useTheme()
   const [, { showToast }] = useToast()
-  const scrollref = useRef<any>()
+  const scrollref = useRef<ScrollView>(null)
 
   const [alertState, setAlertState] = useState<{ open: boolean, content: Array<any>, success?: boolean }>({ open: false, content: [], success: false })
 
